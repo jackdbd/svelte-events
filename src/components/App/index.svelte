@@ -1,7 +1,8 @@
 <script>
-  import Layout from '../Layout';
-  import ImageExample from '../ImageExample';
+  import Badge from "../Badge";
   import Button from '../Button';
+  import ImageExample from '../ImageExample';
+  import Layout from '../Layout';
   import TextInput from '../TextInput';
   import { isEmpty, isValidEmail } from "../../helpers/validation.js";
 
@@ -13,8 +14,14 @@
   $: emailValid = isValidEmail(email);
   $: titleValid = !isEmpty(title);
 
+  let isFav = true;
+
   const handleClick = () => {
     alert('I was clicked');
+  }
+
+  const toggleIsFav = () => {
+    isFav = !isFav;
   }
 </script>
 
@@ -32,7 +39,7 @@
       <Button on:click={handleClick}>Button with handler</Button>
       <Button color="success">Button success</Button>
       <Button mode="outline">Button with outline</Button>
-      <Button color="success" mode="outline">Button with outline success</Button>
+      <Button color="success" mode="outline" on:click={toggleIsFav}>Button with outline success</Button>
       <Button href="mailto:{'jackdebidda@gmail.com'}">Contact</Button>
       <TextInput
         id="title"
@@ -51,11 +58,14 @@
           on:input={event => (email = event.target.value)} />
     <TextInput
       id="description"
+      bind:value={description}
       label="Description"
       controlType="textarea"
       valid={descriptionValid}
-      validityMessage="Please enter a valid description."
-      bind:value={description} />
+      validityMessage="Please enter a valid description." />
+      {#if isFav}
+        <Badge>FAVORITE</Badge>
+      {/if}
     </div>
   </div>
 </Layout>
