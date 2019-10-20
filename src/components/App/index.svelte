@@ -1,71 +1,68 @@
 <script>
-  import Badge from "../Badge";
   import Button from '../Button';
   import ImageExample from '../ImageExample';
-  import Layout from '../Layout';
+  import MeetupDetail from "../MeetupDetail";
+  import EditMeetup from "../EditMeetup";
+  import MeetupGrid from '../MeetupGrid';
   import TextInput from '../TextInput';
-  import { isEmpty, isValidEmail } from "../../helpers/validation.js";
+  import { meetupStore } from "../../stores/meetups.js";
+  
+  // Id of the meetup currently being edited.
+  let editedId = undefined;
 
-  let description = "";
-  let email = "";
-  let title = "";
+  // If true, show a modal to enter/udpate data about a given meetup.
+  let isInEditMode = false;
 
-  $: descriptionValid = !isEmpty(description);
-  $: emailValid = isValidEmail(email);
-  $: titleValid = !isEmpty(title);
+  // Simulate a multi-page app. We start from the "overview" page.
+  const OVERVIEW_PAGE = 'overview';
+  const DETAILS_PAGE = 'details';
+  let page = OVERVIEW_PAGE;
 
-  let isFav = true;
+  let pageData = {};
 
-  const handleClick = () => {
-    alert('I was clicked');
+  const onAddEvent = (event) => {
+    isInEditMode = true;
   }
 
-  const toggleIsFav = () => {
-    isFav = !isFav;
+  const onCancelEvent = () => {
+    editedId = undefined;
+    isInEditMode = false;
+  }
+
+  const onCloseEvent = () => {
+    page = OVERVIEW_PAGE;
+    pageData = {};
+  }
+
+  const onEditEvent = (event) => {
+    isInEditMode = true;
+    editedId = event.detail;
+  }
+
+  const onSaveEvent = () => {
+    editedId = undefined;
+    isInEditMode = false;
+  }
+
+  const onShowDetails = (event) => {
+    page = DETAILS_PAGE;
+    pageData.id = event.detail;
   }
 </script>
 
-<style src="./style.scss">
-
-</style>
-
-<Layout>
-  <div class="container">
-    <div class="container__top">
-      <ImageExample />
-    </div>
-    <div class="container__middle">
-      <Button>Default Button</Button>
-      <Button on:click={handleClick}>Button with handler</Button>
-      <Button color="success">Button success</Button>
-      <Button mode="outline">Button with outline</Button>
-      <Button color="success" mode="outline" on:click={toggleIsFav}>Button with outline success</Button>
-      <Button href="mailto:{'jackdebidda@gmail.com'}">Contact</Button>
-      <TextInput
-        id="title"
-        label="Title"
-        on:input={event => (title = event.target.value)}
-        valid={titleValid}
-        validityMessage="Please enter a valid title."
-        value={'title'} />
-        <TextInput
-          id="email"
-          label="E-Mail"
-          type="email"
-          valid={emailValid}
-          validityMessage="Please enter a valid email address."
-          value={email}
-          on:input={event => (email = event.target.value)} />
-    <TextInput
-      id="description"
-      bind:value={description}
-      label="Description"
-      controlType="textarea"
-      valid={descriptionValid}
-      validityMessage="Please enter a valid description." />
-      {#if isFav}
-        <Badge>FAVORITE</Badge>
-      {/if}
-    </div>
-  </div>
-</Layout>
+<main>
+  {#if page === OVERVIEW_PAGE}
+    {#if isInEditMode}
+      <EditMeetup id={editedId} on:cancel={onCancelEvent} on:save={onSaveEvent} />
+    {/if}
+    <MeetupGrid
+      meetups={$meetupStore}
+      on:add={onAddEvent}
+      on:edit={onEditEvent}
+      on:show-details={onShowDetails} />
+  {:else if page === DETAILS_PAGE}
+    <MeetupDetail id={pageData.id} on:close={onCloseEvent} />
+  {:else}
+    <p>Page "{page}" not implemented</p>
+  {/if}
+</main>

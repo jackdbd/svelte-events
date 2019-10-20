@@ -1,0 +1,11 @@
+#meetups-controls {
+  display: flex;
+  justify-content: space-between;
+  margin: 1rem;
+}
+
+#meetups-grid {
+  display: grid;
+  grid-gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(321px, 1fr));
+}
