@@ -13,7 +13,7 @@
     "ci": "yarn lint && yarn test && yarn coverage && yarn build",
     "clean": "rimraf build",
     "coverage": "codecov",
-    "deploy": "gh-pages -d build",
+    "deploy": "gh-pages -d public",
     "dev": "webpack-dev-server --content-base public --env.svelteDevMode=TRUE",
     "format": "eslint -c .eslintrc --fix --ext .svelte,.js --fix src",
     "format:prettier": "prettier --write src/**/{*.svelte,*.js}",
